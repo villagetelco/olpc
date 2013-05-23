@@ -112,6 +112,8 @@ if [ $MODE = "Master" ];then
 	uci set secn.dhcp.endip=$OCTET12"."$CLASS".200"
 	uci set secn.dhcp.maxleases="100"
 	uci set secn.dhcp.dhcp_auth="1"
+else
+	uci set secn.dhcp.enable="0"
 fi
 
 # set up for Multi-Class working
