@@ -1,0 +1,133 @@
+#!/bin/sh
+# /etc/init.d/config_olpc
+
+# Set DNS value for DHCP requests
+# Use Google for full access
+DNS="8.8.8.8"
+#Use OpenDNS for filtered content
+#DNS="208.67.222.222, 208.67.220.220"
+
+# Get OLPC settings
+CLASS=`uci get olpc.setup.class`
+MODE=`uci get olpc.setup.mode`
+NETACCESS=`uci get olpc.setup.netaccess`
+ENUSBMODEM=`uci get olpc.setup.enusbmodem`
+SSIDPREFIX=`uci get olpc.setup.ssidprefix`
+SSID=`uci get olpc.setup.ssid`
+PASSPHRASE=`uci get olpc.setup.passphrase`
+MULTICLASS=`uci get olpc.setup.multiclass`
+
+# Limit CLASS value 1-99
+if [ $CLASS -gt 99 ] || [ $CLASS -lt 1 ]; then
+	CLASS="99"
+	uci set olpc.setup.class=$CLASS
+	uci commit olpc
+fi
+
+# Setup WAN access
+if [ $NETACCESS = "checked" ]; then
+	uci set secn.wan.wanport="Ethernet"    # Set for default Ethernet WAN port
+	if [ $ENUSBMODEM = "checked" ]; then    # Check if USB Modem is required
+		uci set secn.wan.wanport="USB-Modem"
+	fi
+else
+	uci set secn.wan.wanport="Disable"    # Else leave WAN disabled
+fi
+
+# Set up IP address
+if [ $MODE = "Master" ];then
+	OCTET4="254"
+elif [ $MODE = "Slave-1" ];then
+	OCTET4="241"
+elif [ $MODE = "Slave-2" ];then
+	OCTET4="242"
+elif [ $MODE = "Slave-3" ];then
+	OCTET4="243"
+fi
+
+# Build IP address with CLASS as octet 3 and octet 4 as per MODE
+OCTET12=`uci show network.lan.ipaddr | cut -d = -f 2 | cut -d . -f 1,2`
+IP=$OCTET12"."$CLASS"."$OCTET4
+
+# Build Master IP
+MASTER_IP=$OCTET12"."$CLASS".254"
+
+uci set network.lan.ipaddr=$IP
+uci set network.lan.gateway="0.0.0.0" # No gateway on LAN, only via WAN
+uci set network.lan.dns=$DNS          # DNS will be used for DHCP requests as well
+
+# Get the last digits of the class number
+CLASSDIGIT=`echo -n $CLASS | tail -c -1`
+CLASSDIGIT2=`echo -n $CLASS | tail -c -2`
+
+# Make sure CLASSDIGIT2 two char string for BSSID
+if [ $CLASSDIGIT2 -lt 10 ]; then
+	CLASSDIGIT2="0"$CLASSDIGIT2
+fi
+
+# Build mesh BSSID with last two digits of CLASS as last octet
+BSSID='02:CA:FE:BA:BE:'$CLASSDIGIT2
+uci set wireless.ah_0.bssid=$BSSID 
+
+# Set up the mesh SSID
+MESHSSID="olpc-vt-mesh-"$CLASSDIGIT2
+uci set wireless.ah_0.ssid=$MESHSSID
+
+# Set WiFi channel based on last digit of CLASS
+if [ $CLASSDIGIT = '1' ] || [ $CLASSDIGIT = '6' ]; then
+	CHAN=1
+fi
+
+if [ $CLASSDIGIT = '2' ] || [ $CLASSDIGIT = '7' ]; then
+	CHAN=3
+fi
+
+if [ $CLASSDIGIT = '3' ] || [ $CLASSDIGIT = '8' ]; then
+	CHAN=6
+fi
+
+if [ $CLASSDIGIT = '4' ] || [ $CLASSDIGIT = '9' ]; then
+	CHAN=9
+fi
+
+if [ $CLASSDIGIT = '5' ] || [ $CLASSDIGIT = '0' ]; then
+	CHAN=11
+fi
+
+uci set wireless.radio0.channel=$CHAN
+
+# Set up wifi SSID
+SSID=$SSIDPREFIX"-Class_"$CLASS"-"$SSID
+uci set secn.accesspoint.ssid=$SSID
+
+# Save wifi password
+uci set secn.accesspoint.passphrase=$PASSPHRASE
+
+# Enable DHCP if Master mode
+if [ $MODE = "Master" ];then
+	uci set secn.dhcp.enable="checked"
+	/bin/setdhcpsubnet.sh
+	uci set secn.dhcp.leaseterm="3600"
+	uci set secn.dhcp.startip=$OCTET12"."$CLASS".100"
+	uci set secn.dhcp.endip=$OCTET12"."$CLASS".200"
+	uci set secn.dhcp.maxleases="100"
+	uci set secn.dhcp.dhcp_auth="1"
+fi
+
+# set up for Multi-Class working
+if [ $MULTICLASS = "checked" ];then
+	uci set secn.dhcp.subnet="255.255.0.0"
+else
+	uci set secn.dhcp.subnet="255.255.255.0"
+fi
+
+# Set the Master address as the gateway for DHCP
+uci set secn.dhcp.router=$MASTER_IP
+
+# Commit changes
+uci commit wireless
+uci commit network
+uci commit secn
+
+sleep 1
+

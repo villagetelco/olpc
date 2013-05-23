@@ -1,0 +1,12 @@
+
+config olpc 'setup'
+	option class '99'
+	option netaccess 'checked'
+	option enusbmodem '0'
+	option ssidprefix 'OLPC'
+	option ssid 'wifi-name'
+	option passphrase 'wifi-password'
+	option mode 'Master'
+	option multiclass '0'
+
+

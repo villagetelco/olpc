@@ -1,0 +1,160 @@
+cat > /tmp/config.html << EOF
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<head>
+	<title>OLPC SECN Configuration</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<style type="text/css">	@import url(/lib/configstyle.css); 	</style>
+	<script type="text/javascript" src="/lib/jquery-1.7.1.min.js"></script>
+	<script type="text/javascript" src="/lib/jquery.hashchange.min.js"></script>
+	<script type="text/javascript" src="/lib/jquery.easytabs.min.js"></script>
+	<script type="text/javascript" src="/lib/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="/lib/jquery.form.min.js"></script>
+	<script type="text/javascript" src="/lib/checkip.js"></script>
+</head>
+
+<body>
+<div class='banner'>
+	<img class="logo" src="/images/vtlogo.png" alt="Village Telco">
+	<div class="titletext">	
+		<h1 class="textbanner">OLPC SECN Configuration</h1> 
+		<p>Firmware: $VERSION</p>
+		<p>Date: $DATE</p>
+	</div>
+</div>
+
+<div id="outer-container" class="tab-container">
+	<ul class='etabs'>
+	  <li class="tab"><a href="#tabs1-olpc">OLPC</a></li>
+	</ul>
+
+	<div class="panel-container">
+
+
+		<!-- OLPC Configuration Form -->
+		<div id="tabs1-olpc">
+			<form name="MP" id="MP" METHOD="GET" ACTION="/cgi-bin/config/conf-sub-olpc.sh">
+				<fieldset class="network">
+					<legend>OLPC Settings</legend>
+					<table>
+						<tr>
+							<td class="label"><label for="tz">Class Number (1-99)</label></td>
+							<td class="field"><input type="text" name="CLASS" id="class" VALUE=$CLASS> </td>
+
+							<td class="label"><label for="MODE"> Mode </label></td>
+							<td class="field">
+							<SELECT name="MODE" id="MODE" >
+							<option selected="$MODE">$MODE</option>
+							<option value="Master">Master</option>
+							<option value="Slave-1">Slave 1</option>
+							<option value="Slave-2">Slave 2</option>
+							<option value="Slave-3">Slave 3</option>
+							</SELECT></td>
+						</tr>
+					</table>
+					<table>
+						<tr>
+							* For each Class number, set up only one Master unit. Then set up one or more Slave units as required.
+						</tr>
+						<br><br>
+					</table>
+
+					<table>
+						<tr>
+							<td class="label"><label for="tz">WiFi Name</label></td>
+							<td class="field"><input type="text" name="SSIDPREFIX" id="ssidprefix" VALUE=$SSIDPREFIX> </td>
+							<td> <strong> -Class_$CLASS- </strong></td>
+							<td class="field"><input type="text" name="SSID" id="ssid" VALUE=$SSID> </td>
+						</tr>
+					</table>
+					<table>
+						<tr>
+							* WiFi Name fields can use only letters, numbers and the dash or underscore symbols.
+						</tr>
+						<br><br>
+					</table>
+
+					<table>
+						<tr>
+							<td class="label"><label for="tz">WiFi Passsword</label></td>
+							<td class="field"><input type="text" name="PASSPHRASE" id="passphrase" VALUE=$PASSPHRASE> </td>
+						</tr>
+					</table>
+					<table>
+						<tr>
+							* WiFi Password must be at least eight characters in length, using only letters, numbers and the dash symbol.
+						</tr>
+						<br><br>
+					</table>
+
+					<table>
+						<tr>
+							<td class="label"><label>Enable Internet Access</label></td>
+							<td class="field"><input  type="checkbox" name="NETACCESS" id="netaccess" VALUE="checked" $NETACCESS ></td>
+					</table>
+					<table>
+						<tr>
+							* For Internet access, connect Master unit to the LAN using an Ethernet cable.
+						</tr>
+						<br><br>
+					</table>
+
+<!--
+						<tr>
+							<td class="label"><label>Enable USB Modem</label></td>
+							<td class="field"><input  type="checkbox" name="ENUSBMODEM" id="enusbmodem" VALUE="checked" $ENUSBMODEM ></td>
+						</tr>
+						<tr>
+							<td class="label"><label>Multi Class</label></td>
+							<td class="field"><input  type="checkbox" name="MULTICLASS" id="multiclass" VALUE="checked" $MULTICLASS ></td>
+						</tr>
+-->
+					</table>
+				</fieldset>
+
+				<fieldset class="password">
+					<legend>System Settings</legend>
+					<table>
+						<tr>
+							<td class="label"><label for="PASSWORD1">Enter Password</label></td>
+							<td class="field"><input name="PASSWORD1" id="PASSWORD1" type="password" VALUE=$PASSWORD1></td>
+							<td class="status"></td>
+							<td class="label"><label for="PASSWORD2">Repeat Password</label></td>
+							<td class="field"><input name="PASSWORD2" id="PASSWORD2" type="password" VALUE=$PASSWORD2></td>
+							<td class="status"></td>
+							<td class="field"> <INPUT TYPE="SUBMIT" name="BUTTON" VALUE="Set Password" > </td>
+						</tr>
+					</table>
+					<table>
+						<tr>
+							<td class="ast_reg"> $PASSWORD_STATUS </td>
+						</tr>
+					</table>
+					<table>
+						<tr>
+							<td class="label"><label for="tz">Time Zone</label></td>
+							<td class="field"><input type="text" name="TZ" id="tz" VALUE=$TZ> </td>
+						</tr>
+					</table>
+				</fieldset>
+
+		<h3>Status</h3>  <strong>IP:</strong> $IP ... <strong>WiFi Channel:</strong> $CHANNEL ... <strong>WiFi Name:</strong> $WIFINAME
+
+				<table class="submitform">
+					<tr>
+						<td>
+						<INPUT TYPE="SUBMIT" name="BUTTON" VALUE="Refresh" >
+						<INPUT TYPE="SUBMIT" name="BUTTON" VALUE="Save" >
+						<INPUT TYPE="SUBMIT" name="BUTTON" VALUE="Reboot" >
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>	
+	</div>
+</div>
+</body>
+</html>
+
+EOF
+
