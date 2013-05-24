@@ -46,7 +46,7 @@ uci set network.lan.ipaddr=$IP
 #uci set network.lan.dns=$DNS        
 
 # Setup WAN access
-if [$MODE = "Master" ]; then
+if [ $MODE = "Master" ]; then
 	if [ $NETACCESS = "checked" ]; then
 		uci set secn.wan.wanport="Ethernet"    # Set for default Ethernet WAN port
 		if [ $ENUSBMODEM = "checked" ]; then    # Check if USB Modem is required
