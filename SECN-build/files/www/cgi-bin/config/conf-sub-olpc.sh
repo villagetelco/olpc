@@ -43,13 +43,13 @@ if [ \$BUTTON = "Refresh" ]; then
 fi
 
 # Get logged in user
-LOGINUSER=`cat /tmp/auth.txt`
+USER=admin
 
 # Change password, save the result, prepare status message, set web auth on.
 rm /tmp/passwordstatus.txt
 if [ \$BUTTON = "Set+Password" ]; then
 	date > /tmp/setpassword.txt
-	(echo \$PASSWORD1; sleep 1; echo \$PASSWORD2) | passwd \$LOGINUSER >> /tmp/setpassword.txt
+	(echo \$PASSWORD1; sleep 1; echo \$PASSWORD2) | passwd \$USER >> /tmp/setpassword.txt
 	cat /tmp/setpassword.txt | grep change > /tmp/passwordstatus.txt
 	echo ". Reboot to activate web UI Authentication" >> /tmp/passwordstatus.txt
 	uci set secn.http.pw_preset="1"

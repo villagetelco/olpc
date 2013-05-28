@@ -1,17 +1,10 @@
 #!/bin/sh
 # /etc/init.d/config_olpc
 
-# Set DNS value for DHCP requests
-# Use Google for full access
-DNS="8.8.8.8"
-#Use OpenDNS for filtered content
-#DNS="208.67.222.222, 208.67.220.220"
-
 # Get OLPC settings
 CLASS=`uci get olpc.setup.class`
 MODE=`uci get olpc.setup.mode`
 NETACCESS=`uci get olpc.setup.netaccess`
-ENUSBMODEM=`uci get olpc.setup.enusbmodem`
 SSIDPREFIX=`uci get olpc.setup.ssidprefix`
 SSID=`uci get olpc.setup.ssid`
 PASSPHRASE=`uci get olpc.setup.passphrase`
@@ -41,29 +34,19 @@ IP=$OCTET12"."$CLASS"."$OCTET4
 
 # Build Master IP                                                                         
 MASTER_IP=$OCTET12"."$CLASS".254"                                                         
-
 uci set network.lan.ipaddr=$IP                                                            
-#uci set network.lan.dns=$DNS        
 
 # Setup WAN access
 if [ $MODE = "Master" ]; then
-	if [ $NETACCESS = "checked" ]; then
-		uci set secn.wan.wanport="Ethernet"    # Set for default Ethernet WAN port
-		if [ $ENUSBMODEM = "checked" ]; then    # Check if USB Modem is required
-			uci set secn.wan.wanport="USB-Modem"
-		fi
-	else
-		uci set secn.wan.wanport="Disable"    # Else leave WAN disabled
-	fi
+  uci set secn.wan.wanport="Ethernet"    # Set for default Ethernet WAN port
 else
-	# set up for Slave mode
-	uci set secn.wan.wanport="Slave"
-	uci set network.lan.ifname="eth0"       # Lan eth port - DHCP and Fallback
-	uci set network.lan.gateway=$MASTER_IP
-	uci set network.lan.dns=$MASTER_IP
-	uci set network.wan.ifname=""           # Disable the WAN 
+  # set up for Slave mode
+  uci set secn.wan.wanport="Slave"
+  uci set network.lan.ifname="eth9"       # No eth port on lan, only Fallback
+  uci set network.lan.gateway=$MASTER_IP
+  uci set network.lan.dns=$MASTER_IP
+  uci set network.wan.ifname=""           # Disable the WAN 
 fi
-
 
 # Get the last digits of the class number
 CLASSDIGIT=`echo -n $CLASS | tail -c -1`
@@ -85,28 +68,20 @@ uci set wireless.ah_0.ssid=$MESHSSID
 # Set WiFi channel based on last digit of CLASS
 if [ $CLASSDIGIT = '1' ] || [ $CLASSDIGIT = '6' ]; then
 	CHAN=1
-fi
-
-if [ $CLASSDIGIT = '2' ] || [ $CLASSDIGIT = '7' ]; then
+elif [ $CLASSDIGIT = '2' ] || [ $CLASSDIGIT = '7' ]; then
 	CHAN=3
-fi
-
-if [ $CLASSDIGIT = '3' ] || [ $CLASSDIGIT = '8' ]; then
+elif [ $CLASSDIGIT = '3' ] || [ $CLASSDIGIT = '8' ]; then
 	CHAN=6
-fi
-
-if [ $CLASSDIGIT = '4' ] || [ $CLASSDIGIT = '9' ]; then
+elif [ $CLASSDIGIT = '4' ] || [ $CLASSDIGIT = '9' ]; then
 	CHAN=9
-fi
-
-if [ $CLASSDIGIT = '5' ] || [ $CLASSDIGIT = '0' ]; then
+elif [ $CLASSDIGIT = '5' ] || [ $CLASSDIGIT = '0' ]; then
 	CHAN=11
 fi
 
 uci set wireless.radio0.channel=$CHAN
 
 # Set up wifi SSID
-SSID=$SSIDPREFIX"-Class_"$CLASS"-"$SSID
+SSID=$SSIDPREFIX"-Class_"$CLASS$SSID
 uci set secn.accesspoint.ssid=$SSID
 
 # Save wifi password
@@ -120,7 +95,7 @@ if [ $MODE = "Master" ];then
 	uci set secn.dhcp.startip=$OCTET12"."$CLASS".100"
 	uci set secn.dhcp.endip=$OCTET12"."$CLASS".200"
 	uci set secn.dhcp.maxleases="100"
-	uci set secn.dhcp.dhcp_auth="1"
+	uci set secn.dhcp.dhcp_auth="checked"
 else
 	uci set network.lan.dns=$MASTER_IP
 	uci set network.lan.gateway=$MASTER_IP
@@ -135,6 +110,7 @@ uci set secn.dhcp.router=$MASTER_IP
 uci commit wireless
 uci commit network
 uci commit secn
+uci commit olpc
 
 sleep 1
 

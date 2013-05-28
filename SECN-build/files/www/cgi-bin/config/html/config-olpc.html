@@ -63,7 +63,7 @@ cat > /tmp/config.html << EOF
 						<tr>
 							<td class="label"><label for="tz">WiFi Name</label></td>
 							<td class="field"><input type="text" name="SSIDPREFIX" id="ssidprefix" VALUE=$SSIDPREFIX> </td>
-							<td> <strong> -Class_$CLASS- </strong></td>
+							<td> <strong> -Class_$CLASS </strong></td>
 							<td class="field"><input type="text" name="SSID" id="ssid" VALUE=$SSID> </td>
 						</tr>
 					</table>
@@ -85,8 +85,12 @@ cat > /tmp/config.html << EOF
 							* WiFi Password must be at least eight characters in length, using only letters, numbers and the dash symbol.
 						</tr>
 						<br><br>
+						<br><br>
+						<tr>
+							* For Internet access, connect Master unit to the LAN using an Ethernet cable. 
+						</tr>
 					</table>
-
+<!--
 					<table>
 						<tr>
 							<td class="label"><label>Enable Internet Access</label></td>
@@ -94,11 +98,11 @@ cat > /tmp/config.html << EOF
 					</table>
 					<table>
 						<tr>
-							* For Internet access, connect Master unit to the LAN using an Ethernet cable.
+							* For Master unit only. Connect Master unit to the LAN using an Ethernet cable. 
 						</tr>
 						<br><br>
 					</table>
-
+-->
 <!--
 						<tr>
 							<td class="label"><label>Enable USB Modem</label></td>
