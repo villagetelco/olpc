@@ -3,34 +3,47 @@ Classroom Router
 
 Background
 ----------
-This project is intended to provide a simple, scalable wifi router facility for use in classroom situations where there may be thirty or more devices being connected via wifi. The project was developed initially for OLPC Australia for use with XO laptops as part of their One Education initiative, called One Network.
+This project is intended to provide a simple, scalable wifi router facility for use in classroom situations where there may
+be thirty or more devices being connected via wifi. The project was developed initially for OLPC Australia for use with XO
+laptops as part of their One Education initiative, called One Network.
 
 The firmware is intended to be installed on one or more commodity routers such as the TP Link MR3020, WR842, WR741.
-Each router will support a specified number of wifi connections (20 by default) in order to prevent overload, which is a problem experienced with single commodity routers used in this situation. 
+Each router will support a specified number of wifi connections (20 by default) in order to prevent overload, which is a
+problem experienced with single commodity routers used in this situation. 
 
 Overview
 --------
-Multiple Classroom Routers are meshed together using batman-adv to provide a virtual Layer-2 switch, thus expanding the capacity of the system to support greater numbers of conected devices. Up to three Slave devices can be set up through the configuration screen, thus providing up to eighty wifi connections in total.
+Multiple Classroom Routers are meshed together using batman-adv to provide a virtual Layer-2 switch, thus expanding the
+capacity of the system to support greater numbers of conected devices. Up to three Slave devices can be set up through 
+the configuration screen, thus providing up to eighty wifi connections in total.
 
-A designated Master router provides a DHCP service in order to establish a local IP subnet on the mesh. The Master unit also provides a WAN port with NAT to allow it to be connected to a LAN via Ethernet cable in order to provide access to the Internet or other network resources.
+A designated Master router provides a DHCP service in order to establish a local IP subnet on the mesh. The Master unit 
+also provides a WAN port with NAT to allow it to be connected to a LAN via Ethernet cable in order to provide access to 
+the Internet or other network resources.
 
-The local IP subnet is important in order to allow the XO laptops to see each other on the network within a classroom to support collaboration activities provided on the XOs, whilst minimising impact on the main school network. The collaboration traffic travels only on the local subnet over the mesh, whilst the Master provides a gateway to the main school network.
+The local IP subnet is important in order to allow the XO laptops to see each other on the network within a classroom to
+support collaboration activities provided on the XOs, whilst minimising impact on the main school network. 
+The collaboration traffic travels only on the local subnet over the mesh, whilst the Master provides a gateway to the 
+main school network.
 
 A future version of the firmware will also provide support for 3G USB Modem for Internet connection. 
 
 The Classroom Router firmware provides a web based user interface which requires a minimal set up procedure.
-At a minimum, the configuration procedure consists of setting a class number, and setting the Master or Slave mode of operation.
+At a minimum, the configuration procedure consists of setting a class number, and setting the Master or Slave mode 
+of operation.
 
 When newly flashed with the firmware, a Classroom Router will be set up as Master for Class 99 by default.
 The WiFi Access Point will be visible as 'OLPC-Class_99' with password 'one-network'
 
 After connecting to the router via WiFi, the configuration interface will be accessible from a browser at the URL 'olpc99.lan' with login credentials of 'admin' and password 'one-network'.
 
-Setting the Class number (0 - 99) in the configuration automatically sets the SSID for the WiFi Access Point, as well as setting the WiFi channel and mesh parameters in order to provide isolation between adjacent classrooms.
+Setting the Class number (0 - 99) in the configuration automatically sets the SSID for the WiFi Access Point, as well as
+setting the WiFi channel and mesh parameters in order to provide isolation between adjacent classrooms.
 
 The WiFi SSID and password may be changed from the configuration screen.
 
-The router may be set to operate as a Master unit, or as one of three Slave modes. A classroom must have one, and one only, Master, and up to three Slave units.
+The router may be set to operate as a Master unit, or as one of three Slave modes. A classroom must have one, 
+and one only, Master, and up to three Slave units.
 
 The configuration screen for Master unit is accessible at the URL:
     http://olpc<Class>.lan
@@ -48,12 +61,16 @@ whilst the slaves will appear at:
     10.130.<Class>.242
     10.130.<Class>.243
 
-On the Master router there is a Fallback IP operating on the WiFi interface at IP address 172.31.255.254 with netmask 255.255.255.252. To access, set up a static network wifi profile with IP address 172.31.255.253 and netmask 255.255.255.252
+On the Master router there is a Fallback IP operating on the WiFi interface at IP address 172.31.255.254 with netmask
+255.255.255.252. 
+To access, set up a static network wifi profile with IP address 172.31.255.253 and netmask 255.255.255.252
 
 On Slave units, the Fallback IP appears on the Ethernet port.
 
-The 'admin' account has limited privileges and is used only for the web interface. The password for this account can be changed from the web interface.
-The 'root' account is also available for use with ssh and has the usual privileges. The initial root account password is the same as that for the admin account - 'one-network' - and may be changed in an ssh session.
+The 'admin' account has limited privileges and is used only for the web interface. The password for this account can 
+be changed from the web interface.
+The 'root' account is also available for use with ssh and has the usual privileges. The initial root account password 
+is the same as that for the admin account - 'one-network' - and may be changed in an ssh session.
 
 WiFi TX power has been set to 12dBm for classroom use instead of the usual 17dBm.
 
@@ -63,7 +80,8 @@ The standard VT SECN web interface is available at 'http://olpc<Class>.lan/secn.
 
 Setting Up
 ----------
-- After flashing the new firmware, the device will appear as a WiFi Access Point called One-Network-Class_99 and will be configured as a Master device.
+- After flashing the new firmware, the device will appear as a WiFi Access Point called One-Network-Class_99 and 
+   will be configured as a Master device.
 
 - The WiFi password is 'one-network'
 
@@ -71,9 +89,11 @@ Setting Up
 
 - Login id is 'admin' and password is 'one-network'
 
-- Set the required classroom number (e.g. '4'), click Save, check settings after screen refresh, then power cycle the device.
+- Set the required classroom number (e.g. '4'), click Save, check settings after screen refresh, then power cycle 
+   the device.
 
-- To set up Slave devices, proceed as above - set both the Classroom and Mode, click Save, check settings after screen refresh, then power cycle the device.
+- To set up Slave devices, proceed as above - set both the Classroom and Mode, click Save, check settings after 
+   screen refresh, then power cycle the device.
 
 - To access the config screen after the devices have set up, use URLs as follows:
   Master:   http://olpc4.lan     (e.g. for Classroom 4)
