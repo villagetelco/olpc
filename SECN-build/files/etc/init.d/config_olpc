@@ -1,14 +1,36 @@
 #!/bin/sh
 # /etc/init.d/config_olpc
 
+# Get OLPC USB modem settings
+MODEMPORT=`uci get olpc.modem.modemport`
+SERVICE=`uci get olpc.modem.service`
+APN=`uci get olpc.modem.apn`
+DIALSTR=`uci get olpc.modem.dialstr`
+VENDOR=`uci get olpc.modem.vendor`
+PRODUCT=`uci get olpc.modem.product`
+PIN=`uci get olpc.modem.pin`
+USERNAME=`uci get olpc.modem.username`
+PASSWORD=`uci get olpc.modem.password`
+
+# Make any OLPC changes to modem settings here, then...
+
+# Write USB modem settings to SECN
+uci set secn.modem.modemport=$MODEMPORT
+uci set secn.modem.service=$SERVICE
+uci set secn.modem.apn=$APN
+uci set secn.modem.dialstr=$DIALSTR
+uci set secn.modem.vendor=$VENDOR
+uci set secn.modem.product=$PRODUCT
+uci set secn.modem.pin=$PIN
+uci set secn.modem.username=$USERNAME
+uci set secn.modem.password=$PASSWORD
+
 # Get OLPC settings
 CLASS=`uci get olpc.setup.class`
 MODE=`uci get olpc.setup.mode`
-NETACCESS=`uci get olpc.setup.netaccess`
 SSIDPREFIX=`uci get olpc.setup.ssidprefix`
 SSID=`uci get olpc.setup.ssid`
 PASSPHRASE=`uci get olpc.setup.passphrase`
-MULTICLASS=`uci get olpc.setup.multiclass`
 
 # Limit CLASS value 1-99
 if [ $CLASS -gt 99 ] || [ $CLASS -lt 1 ]; then
@@ -38,7 +60,11 @@ uci set network.lan.ipaddr=$IP
 
 # Setup WAN access
 if [ $MODE = "Master" ]; then
-  uci set secn.wan.wanport="Ethernet"    # Set for default Ethernet WAN port
+  if [  -e /dev/ttyUSB2 ]; then           # Test for USB modem present
+    uci set secn.wan.wanport="USB-Modem"  
+  else 
+    uci set secn.wan.wanport="Ethernet"   # Set for default Ethernet WAN port
+  fi
 else
   # set up for Slave mode
   uci set secn.wan.wanport="Slave"

@@ -1,12 +1,21 @@
 
 config olpc 'setup'
 	option class '99'
-	option netaccess 'checked'
-	option enusbmodem '0'
 	option ssidprefix 'One-Network'
 	option ssid ''
 	option passphrase 'one-network'
 	option mode 'Master'
-	option multiclass '0'
+
+config olpc 'modem'
+	option service 'umts'
+	option vendor '1199'
+	option product '68a3'
+	option modemport '2'
+	option apn 'telstra.internet'
+	option dialstr '*99#'
+	option username ''
+	option pin ''
+	option password ''
+
 
 
