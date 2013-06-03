@@ -1,6 +1,12 @@
 #!/bin/sh
 # /etc/init.d/config_olpc
 
+# Set up DNS Sever           
+DNS=`uci get olpc.dhcp.dns`
+DNS2=`uci get olpc.dhcp.dns2`
+uci set secn.dhcp.dns=$DNS
+uci set secn.dhcp.dns2=$DNS2
+
 # Get OLPC USB modem settings
 MODEMPORT=`uci get olpc.modem.modemport`
 SERVICE=`uci get olpc.modem.service`
@@ -60,7 +66,7 @@ uci set network.lan.ipaddr=$IP
 
 # Setup WAN access
 if [ $MODE = "Master" ]; then
-  if [  -e /dev/ttyUSB2 ]; then           # Test for USB modem present
+  if [  -e /dev/ttyUSB0 ]; then           # Test for USB modem present
     uci set secn.wan.wanport="USB-Modem"  
   else 
     uci set secn.wan.wanport="Ethernet"   # Set for default Ethernet WAN port
@@ -122,7 +128,7 @@ if [ $MODE = "Master" ];then
 	uci set secn.dhcp.endip=$OCTET12"."$CLASS".200"
 	uci set secn.dhcp.maxleases="100"
 	uci set secn.dhcp.dhcp_auth="checked"
-else
+else  # set up for Slave mode
 	uci set network.lan.dns=$MASTER_IP
 	uci set network.lan.gateway=$MASTER_IP
 	uci set secn.dhcp.enable='0'
@@ -130,7 +136,6 @@ fi
 
 # Set the Master address as the gateway for DHCP
 uci set secn.dhcp.router=$MASTER_IP
-
 
 # Commit changes
 uci commit wireless
